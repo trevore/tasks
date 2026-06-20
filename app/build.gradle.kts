@@ -49,9 +49,10 @@ android {
 
     defaultConfig {
         testApplicationId = "org.tasks.test"
-        // Personal fork: published to a private Google Play track under a distinct id
-        // (the official app owns "org.tasks" on Play). Code namespace stays org.tasks.
-        applicationId = "org.tasks.gomu"
+        // Personal fork id (org.tasks.gomu) comes from the version catalog since
+        // 15.9 — override lives in gradle/libs.versions.toml so this line stays
+        // byte-identical to upstream and cannot conflict on future syncs.
+        applicationId = libs.versions.applicationId.get()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
