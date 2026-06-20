@@ -1,13 +1,20 @@
 package org.tasks.locale.receiver
 
-import org.tasks.data.TaskSaver
-import org.tasks.data.entity.Task
+import android.content.Context
 import com.todoroo.astrid.service.TaskCreator
-import org.tasks.data.getDefaultAlarms
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.Strings.isNullOrEmpty
 import org.tasks.analytics.Firebase
-import org.tasks.data.dao.AlarmDao
+import org.tasks.caldav.GeoUtils.toLikeString
+import org.tasks.data.TaskSaver
 import org.tasks.data.createDueDate
+import org.tasks.data.createGeofence
+import org.tasks.data.dao.AlarmDao
+import org.tasks.data.dao.LocationDao
+import org.tasks.data.entity.Place
+import org.tasks.data.entity.Task
+import org.tasks.data.getDefaultAlarms
+import org.tasks.location.RegisterGeofencesWork
 import org.tasks.locale.bundle.TaskCreationBundle
 import org.tasks.preferences.Preferences
 import org.tasks.time.DateTime
@@ -26,6 +33,8 @@ class TaskerTaskCreator @Inject internal constructor(
     private val firebase: Firebase,
     private val alarmDao: AlarmDao,
     private val preferences: Preferences,
+    private val locationDao: LocationDao,
+    @ApplicationContext private val context: Context,
 ) {
     suspend fun handle(bundle: TaskCreationBundle) {
         val task = taskCreator.basicQuickAddTask(bundle.title)
@@ -67,7 +76,41 @@ class TaskerTaskCreator @Inject internal constructor(
         alarmDao.insert(task.getDefaultAlarms(preferences.isDefaultDueTimeEnabled()))
         taskCreator.createTags(task)
         firebase.addTask("tasker")
+        val latitudeString = bundle.latitude
+        val longitudeString = bundle.longitude
+        if (!isNullOrEmpty(latitudeString) && !isNullOrEmpty(longitudeString)) {
+            try {
+                var place = Place(
+                        name = bundle.placeName,
+                        latitude = latitudeString.toDouble(),
+                        longitude = longitudeString.toDouble())
+                val radiusString = bundle.radius
+                if (!isNullOrEmpty(radiusString)) {
+                    try {
+                        place = place.copy(radius = radiusString.toInt())
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e)
+                    }
+                }
+                place = locationDao
+                        .findPlace(place.latitude.toLikeString(), place.longitude.toLikeString())
+                        ?: place.copy(id = locationDao.insert(place))
+                var geofence = createGeofence(place.uid, preferences).copy(task = task.id)
+                if (!isNullOrEmpty(bundle.arrival) || !isNullOrEmpty(bundle.departure)) {
+                    geofence = geofence.copy(
+                            isArrival = parseFlag(bundle.arrival) ?: false,
+                            isDeparture = parseFlag(bundle.departure) ?: false)
+                }
+                locationDao.insert(geofence)
+                RegisterGeofencesWork.enqueue(context)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
+
+    private fun parseFlag(value: String?): Boolean? =
+            if (isNullOrEmpty(value)) null else value.equals("true", ignoreCase = true) || value == "1"
 
     companion object {
         private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
