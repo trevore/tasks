@@ -65,6 +65,12 @@ public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCom
     binding.dueTime.setText(bundle.getDueTime());
     binding.priority.setText(bundle.getPriority());
     binding.description.setText(bundle.getDescription());
+    binding.placeName.setText(bundle.getPlaceName());
+    binding.latitude.setText(bundle.getLatitude());
+    binding.longitude.setText(bundle.getLongitude());
+    binding.radius.setText(bundle.getRadius());
+    binding.arrival.setText(bundle.getArrival());
+    binding.departure.setText(bundle.getDeparture());
   }
 
   @Override
@@ -80,6 +86,12 @@ public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCom
     bundle.setDueTime(binding.dueTime.getText().toString().trim());
     bundle.setPriority(binding.priority.getText().toString().trim());
     bundle.setDescription(binding.description.getText().toString().trim());
+    bundle.setPlaceName(binding.placeName.getText().toString().trim());
+    bundle.setLatitude(binding.latitude.getText().toString().trim());
+    bundle.setLongitude(binding.longitude.getText().toString().trim());
+    bundle.setRadius(binding.radius.getText().toString().trim());
+    bundle.setArrival(binding.arrival.getText().toString().trim());
+    bundle.setDeparture(binding.departure.getText().toString().trim());
     Bundle resultBundle = bundle.build();
     if (TaskerPlugin.Setting.hostSupportsOnFireVariableReplacement(this)) {
       TaskerPlugin.Setting.setVariableReplaceKeys(
@@ -89,7 +101,13 @@ public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCom
             TaskCreationBundle.EXTRA_DUE_DATE,
             TaskCreationBundle.EXTRA_DUE_TIME,
             TaskCreationBundle.EXTRA_PRIORITY,
-            TaskCreationBundle.EXTRA_DESCRIPTION
+            TaskCreationBundle.EXTRA_DESCRIPTION,
+            TaskCreationBundle.EXTRA_PLACE_NAME,
+            TaskCreationBundle.EXTRA_LATITUDE,
+            TaskCreationBundle.EXTRA_LONGITUDE,
+            TaskCreationBundle.EXTRA_RADIUS,
+            TaskCreationBundle.EXTRA_ARRIVAL,
+            TaskCreationBundle.EXTRA_DEPARTURE
           });
     }
     return resultBundle;
