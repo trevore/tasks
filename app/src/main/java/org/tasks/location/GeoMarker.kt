@@ -50,13 +50,18 @@ fun parseGeoMarker(notes: String?): GeoMarker? {
     }
     val lat = values["lat"]?.toDoubleOrNull() ?: return null
     val lng = values["lng"]?.toDoubleOrNull() ?: return null
-    if (lat < -90.0 || lat > 90.0 || lng < -180.0 || lng > 180.0) {
+    // NaN/Infinity slip past a bare range check (every comparison with NaN is
+    // false), so reject non-finite coords explicitly before the bounds test.
+    if (!lat.isFinite() || !lng.isFinite() ||
+        lat < -90.0 || lat > 90.0 || lng < -180.0 || lng > 180.0) {
         return null
     }
     return GeoMarker(
         lat = lat,
         lng = lng,
-        radius = values["r"]?.toIntOrNull(),
+        // A non-positive radius is rejected by the geofence registrar; drop it so
+        // the marker falls back to the app default rather than failing to arm.
+        radius = values["r"]?.toIntOrNull()?.takeIf { it > 0 },
         arrive = parseOnOff(values["arrive"]),
         depart = parseOnOff(values["depart"]),
         place = values["place"]?.takeIf { it.isNotBlank() },
