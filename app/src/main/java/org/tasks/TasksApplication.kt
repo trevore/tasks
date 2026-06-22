@@ -190,6 +190,7 @@ class TasksApplication : Application(), Configuration.Provider {
         workManager.get().apply {
             scheduleBackup()
             scheduleConfigRefresh()
+            schedulePromoteGeoMarkers()
             updatePurchases()
             scheduleRefresh()
             scheduleBlogFeedCheck()
