@@ -37,6 +37,7 @@ import org.tasks.data.entity.Task
 import org.tasks.date.DateTimeUtils.midnight
 import org.tasks.date.DateTimeUtils.newDateTime
 import org.tasks.feed.BlogFeedMode
+import org.tasks.location.GeoMarkerPromoteWorker
 import org.tasks.jobs.DriveUploader.Companion.EXTRA_PURGE
 import org.tasks.jobs.DriveUploader.Companion.EXTRA_URI
 import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_ACCOUNT
@@ -49,6 +50,7 @@ import org.tasks.jobs.WorkManager.Companion.TAG_MIGRATE_LOCAL
 import org.tasks.jobs.WorkManager.Companion.TAG_NOTIFICATIONS
 import org.tasks.jobs.WorkManager.Companion.TAG_REFRESH
 import org.tasks.jobs.WorkManager.Companion.TAG_REMOTE_CONFIG
+import org.tasks.jobs.WorkManager.Companion.TAG_PROMOTE_GEO
 import org.tasks.jobs.WorkManager.Companion.TAG_BLOG_FEED
 import org.tasks.jobs.WorkManager.Companion.TAG_SYNC
 import org.tasks.jobs.WorkManager.Companion.TAG_UPDATE_PURCHASES
@@ -184,6 +186,17 @@ class WorkManagerImpl(
                     PeriodicWorkRequest.Builder(
                             RemoteConfigWork::class.java, REMOTE_CONFIG_INTERVAL_HOURS, TimeUnit.HOURS)
                             .setConstraints(networkConstraints)
+                            .build())
+        }
+    }
+
+    override fun schedulePromoteGeoMarkers() {
+        throttle.run {
+            workManager.enqueueUniquePeriodicWork(
+                    TAG_PROMOTE_GEO,
+                    ExistingPeriodicWorkPolicy.UPDATE,
+                    PeriodicWorkRequest.Builder(
+                            GeoMarkerPromoteWorker::class.java, 15, TimeUnit.MINUTES)
                             .build())
         }
     }

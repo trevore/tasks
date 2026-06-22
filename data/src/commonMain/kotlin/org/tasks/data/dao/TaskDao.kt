@@ -69,6 +69,9 @@ FROM (
     @Query("SELECT * FROM tasks WHERE completed = 0 AND deleted = 0")
     abstract suspend fun getActiveTasks(): List<Task>
 
+    @Query("SELECT * FROM tasks WHERE notes LIKE '%@gomu-geo%' AND deleted = 0 AND completed = 0")
+    abstract suspend fun getGeoMarkerTasks(): List<Task>
+
     @Query("SELECT * FROM tasks WHERE remoteId IN (:remoteIds) "
             + "AND recurrence IS NOT NULL AND LENGTH(recurrence) > 0")
     abstract suspend fun getRecurringTasks(remoteIds: List<String>): List<Task>

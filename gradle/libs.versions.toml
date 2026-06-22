@@ -109,6 +109,7 @@ androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-te
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-work = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "work" }
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version = "af443c2f"}
 bitfire-ical4android = { module = "com.github.tasks:ical4android", version.ref = "ical4android"}
