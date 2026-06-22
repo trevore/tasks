@@ -33,6 +33,7 @@ import org.tasks.etebase.EtebaseSynchronizer
 import org.tasks.extensions.Context.hasNetworkConnectivity
 import org.tasks.gtasks.AndroidGoogleTaskSynchronizer
 import org.tasks.injection.BaseWorker
+import org.tasks.location.GeoMarkerPromoteWorker
 import org.tasks.opentasks.OpenTasksSynchronizer
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
@@ -91,6 +92,9 @@ class SyncWork @AssistedInject constructor(
             setSyncSource(SyncSource.NONE)
             refreshBroadcaster.broadcastRefresh()
         }
+        // A freshly synced @gomu-geo marker should arm without waiting for the
+        // periodic worker floor.
+        GeoMarkerPromoteWorker.enqueue(context)
         return Result.success()
     }
 

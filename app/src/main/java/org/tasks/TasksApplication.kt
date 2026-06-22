@@ -152,6 +152,7 @@ class TasksApplication : Application(), Configuration.Provider {
             updateBackgroundSync()
             scheduleBackup()
             scheduleConfigRefresh()
+            schedulePromoteGeoMarkers()
             updatePurchases()
             scheduleRefresh()
             scheduleBlogFeedCheck()
