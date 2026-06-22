@@ -29,6 +29,8 @@ interface WorkManager : BackgroundWork {
 
     fun scheduleConfigRefresh()
 
+    fun schedulePromoteGeoMarkers()
+
     fun scheduleDriveUpload(uri: Uri, purge: Boolean)
 
     fun updatePurchases()
@@ -42,6 +44,7 @@ interface WorkManager : BackgroundWork {
         const val TAG_SYNC = "tag_sync"
         const val TAG_BACKGROUND_SYNC = "tag_background_sync"
         const val TAG_REMOTE_CONFIG = "tag_remote_config"
+        const val TAG_PROMOTE_GEO = "tag_promote_geo"
         const val TAG_MIGRATE_LOCAL = "tag_migrate_local"
         const val TAG_UPDATE_PURCHASES = "tag_update_purchases"
         const val TAG_NOTIFICATIONS = "tag_notifications"
