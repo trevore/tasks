@@ -51,6 +51,23 @@ class GeoMarkerTest {
     }
 
     @Test
+    fun rejectsNonFiniteCoords() {
+        // NaN/Infinity parse as Double but slip past a bare min/max range check.
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=NaN lng=2.0"))
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=1.0 lng=NaN"))
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=Infinity lng=2.0"))
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=1.0 lng=-Infinity"))
+    }
+
+    @Test
+    fun dropsNonPositiveRadius() {
+        // A non-positive radius is rejected by the geofence registrar, so fall back
+        // to the app default instead of carrying it through.
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=1.0 lng=2.0 r=0")!!.radius)
+        assertNull(parseGeoMarker("@gomu-geo v1 lat=1.0 lng=2.0 r=-50")!!.radius)
+    }
+
+    @Test
     fun parsesQuotedPlaceWithSpaces() {
         val marker = parseGeoMarker("@gomu-geo v1 lat=1.0 lng=2.0 place=\"Walgreens Pharmacy\"")!!
         assertEquals("Walgreens Pharmacy", marker.place)
