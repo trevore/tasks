@@ -119,6 +119,14 @@ android {
         resources {
             excludes += setOf("META-INF/*.kotlin_module", "META-INF/INDEX.LIST")
         }
+        // Drop the Etebase Rust .so: it ships 4 KB ELF segment alignment and breaks
+        // 16 KB-page devices (e.g. the Pixel 10). We sync via CalDAV (Nextcloud), not
+        // Etebase, and com.etebase:client loads this lib lazily only for Etebase
+        // accounts — so excluding it keeps the APK 16 KB-clean with no effect on CalDAV.
+        // (etebase 2.3.2 is the last upstream release; no 16 KB-aligned build to bump to.)
+        jniLibs {
+            excludes += "**/libetebase_android.so"
+        }
     }
 
     testOptions {
