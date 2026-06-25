@@ -1,15 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gomu mascot blob (rubber-blob "g"). Generated from brand/gomu-icon.svg.
+     White body + brand-ink face; renders as the brand mark over any launcher
+     background color, and flattens to a clean silhouette when tinted (themed
+     icons / home-screen placeholder). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-  <group android:scaleX="1.299375"
-      android:scaleY="1.299375"
-      android:translateX="22.2375"
-      android:translateY="21.94875">
-    <path
-        android:pathData="M18,32.34L9.66,24L6.83,26.83L18,38L42,14L39.17,11.17L18,32.34Z"
-        android:fillColor="#ffffff"
-        android:fillType="nonZero"/>
-  </group>
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+  <!-- tail (white, stroked ribbon like the source) -->
+  <path
+      android:pathData="M325.19,266.88 C358.85,300.54 352.73,354.09 308.36,370.92 C271.64,384.69 241.04,366.33 247.93,340.32 C252.51,321.96 271.64,318.9 283.12,332.67"
+      android:fillColor="#ffffff"
+      android:strokeColor="#ffffff"
+      android:strokeWidth="22.95"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"/>
+  <!-- head -->
+  <path android:pathData="M144.65,214.86 a113.22,99.45 0 1,0 226.44,0 a113.22,99.45 0 1,0 -226.44,0 Z" android:fillColor="#ffffff"/>
+  <!-- grin -->
+  <path android:pathData="M237.21,234.75 Q267.81,271.47 298.42,234.75 Z" android:fillColor="#241544"/>
+  <!-- tooth -->
+  <path android:pathData="M263.6,234.75 L272.02,234.75 Q273.93,234.75 273.93,236.66 L273.93,245.85 Q273.93,247.76 272.02,247.76 L263.6,247.76 Q261.69,247.76 261.69,245.85 L261.69,236.66 Q261.69,234.75 263.6,234.75 Z" android:fillColor="#ffffff"/>
+  <!-- eyes: ink iris + white glint -->
+  <path android:pathData="M227.28,204.91 a11.47,11.47 0 1,0 22.94,0 a11.47,11.47 0 1,0 -22.94,0 Z" android:fillColor="#241544"/>
+  <path android:pathData="M296.12,201.09 a11.47,11.47 0 1,0 22.94,0 a11.47,11.47 0 1,0 -22.94,0 Z" android:fillColor="#241544"/>
+  <path android:pathData="M230.71,200.33 a4.21,4.21 0 1,0 8.42,0 a4.21,4.21 0 1,0 -8.42,0 Z" android:fillColor="#ffffff"/>
+  <path android:pathData="M299.56,196.5 a4.21,4.21 0 1,0 8.42,0 a4.21,4.21 0 1,0 -8.42,0 Z" android:fillColor="#ffffff"/>
 </vector>
