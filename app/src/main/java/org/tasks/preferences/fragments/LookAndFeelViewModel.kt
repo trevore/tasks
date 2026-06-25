@@ -84,7 +84,7 @@ class LookAndFeelViewModel @Inject constructor(
         }
         dynamicColorProOnly = dynamicColorAvailable && !inventory.hasPro
         currentThemeColor = themeColorPickerColor
-        val launcher = getLauncherColor(context, preferences.getInt(R.string.p_theme_launcher, 7))
+        val launcher = getLauncherColor(context, preferences.getInt(R.string.p_theme_launcher, 20))
         currentLauncherColor = launcher.pickerColor
         markdownEnabled = preferences.markdown
         openLastViewedList = preferences.getBoolean(R.string.p_open_last_viewed_list, true)

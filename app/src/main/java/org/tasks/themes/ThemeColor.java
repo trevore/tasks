@@ -37,7 +37,8 @@ public class ThemeColor implements Pickable {
         org.tasks.kmp.R.mipmap.ic_launcher_orange,
         org.tasks.kmp.R.mipmap.ic_launcher_deep_orange,
         org.tasks.kmp.R.mipmap.ic_launcher_brown,
-        org.tasks.kmp.R.mipmap.ic_launcher_grey
+        org.tasks.kmp.R.mipmap.ic_launcher_grey,
+        org.tasks.kmp.R.mipmap.ic_launcher_plum
       };
 
   public static final String[] LAUNCHERS =
@@ -61,7 +62,8 @@ public class ThemeColor implements Pickable {
         ".Orange",
         ".DeepOrange",
         ".Brown",
-        ".Grey"
+        ".Grey",
+        ".Plum"
       };
 
   public static final int[] LAUNCHER_COLORS =
@@ -85,7 +87,8 @@ public class ThemeColor implements Pickable {
         org.tasks.kmp.R.color.orange_500,
         org.tasks.kmp.R.color.deep_orange_500,
         org.tasks.kmp.R.color.brown_500,
-        org.tasks.kmp.R.color.grey_500
+        org.tasks.kmp.R.color.grey_500,
+        org.tasks.kmp.R.color.plum_500
       };
 
   public static final Parcelable.Creator<ThemeColor> CREATOR =

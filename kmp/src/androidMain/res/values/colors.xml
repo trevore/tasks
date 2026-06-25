@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Gomu brand plum (launcher icon background); see brand/gomu-icon.svg -->
+    <color name="plum_500">#c026d3</color>
+
     <color name="red_500">#f44336</color>
     <color name="red_a400">#ff1744</color>
 
