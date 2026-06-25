@@ -49,7 +49,9 @@ android {
 
     defaultConfig {
         testApplicationId = "org.tasks.test"
-        applicationId = "org.tasks"
+        // Personal fork: published to a private Google Play track under a distinct id
+        // (the official app owns "org.tasks" on Play). Code namespace stays org.tasks.
+        applicationId = "org.tasks.gomu"
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
