@@ -1,7 +1,7 @@
 [versions]
 versionCode = "151002" # increment by 2
 versionName = "15.10"
-applicationId = "org.tasks"
+applicationId = "org.tasks.gomu"
 agp = "9.3.1"
 android-compileSdk = "36"
 android-minSdk = "26"
