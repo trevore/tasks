@@ -73,6 +73,36 @@ class TaskerTaskCreatorTest : InjectingTestCase() {
         assertEquals(before, locationDao.getPlaces().size)
     }
 
+    @Test
+    fun invalidCoordinatesCreateNoPlace() = runBlocking {
+        val before = locationDao.getPlaces().size
+
+        // Tasker variables are free text: out-of-range and non-finite must both
+        // be rejected (NaN slips past a bare range check).
+        taskerTaskCreator.handle(bundle(latitude = "91.0", longitude = "22.2", arrival = "true"))
+        taskerTaskCreator.handle(bundle(latitude = "12.3", longitude = "-181.0", arrival = "true"))
+        taskerTaskCreator.handle(bundle(latitude = "NaN", longitude = "22.2", arrival = "true"))
+        taskerTaskCreator.handle(bundle(latitude = "Infinity", longitude = "22.2", arrival = "true"))
+
+        assertEquals(before, locationDao.getPlaces().size)
+    }
+
+    @Test
+    fun nonPositiveRadiusFallsBackToDefault() = runBlocking {
+        taskerTaskCreator.handle(bundle(
+            latitude = "13.131313",
+            longitude = "24.242424",
+            radius = "-50",
+            arrival = "true",
+        ))
+
+        val place = locationDao.findPlace(13.131313.toLikeString(), 24.242424.toLikeString())
+        assertNotNull(place)
+        // The geofence registrar rejects a non-positive radius; the place must
+        // carry the app default instead of the bogus value.
+        assertTrue(place!!.radius > 0)
+    }
+
     private fun bundle(
         title: String = "task",
         latitude: String? = null,
