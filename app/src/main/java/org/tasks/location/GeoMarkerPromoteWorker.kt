@@ -8,6 +8,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.tasks.analytics.Firebase
 import org.tasks.caldav.GeoUtils.toLikeString
 import org.tasks.data.TaskSaver
@@ -40,11 +42,18 @@ class GeoMarkerPromoteWorker @AssistedInject constructor(
 ) : BaseWorker(context, workerParams, firebase) {
 
     override suspend fun run(): Result {
-        for (task in taskDao.getGeoMarkerTasks()) {
-            try {
-                promote(task)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to promote geo marker for task %d", task.id)
+        // Single-flight: the sync-triggered one-time worker and the periodic worker
+        // live under different unique WorkManager names, so WorkManager can run them
+        // concurrently — and the geofence guard in promote() is check-then-insert.
+        // Serialize the whole pass (task list fetched under the lock) so a race can
+        // never mint a duplicate geofence.
+        PROMOTE_MUTEX.withLock {
+            for (task in taskDao.getGeoMarkerTasks()) {
+                try {
+                    promote(task)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to promote geo marker for task %d", task.id)
+                }
             }
         }
         return Result.success()
@@ -58,9 +67,23 @@ class GeoMarkerPromoteWorker @AssistedInject constructor(
             stripAndSave(task)
             return
         }
-        val marker = parseGeoMarker(task.notes) ?: return
+        val marker = parseGeoMarker(task.notes)
+        if (marker == null) {
+            // The DAO query matches any "@gomu-geo" substring. A marker LINE that
+            // failed validation is machine-owned and will never arm — strip it
+            // (with a breadcrumb) instead of re-parsing it every period. A mere
+            // mid-line mention has no marker line, so stripAndSave is a no-op.
+            if (stripGeoMarker(task.notes) != task.notes) {
+                Timber.w("Stripping invalid @gomu-geo marker from task %d", task.id)
+            }
+            stripAndSave(task)
+            return
+        }
         var place = Place(name = marker.place, latitude = marker.lat, longitude = marker.lng)
         marker.radius?.let { place = place.copy(radius = it) }
+        // An existing place at these coords wins, including its radius (a marker
+        // r= is ignored then) — same reuse the in-app map picker and the Tasker
+        // action apply.
         place = locationDao
             .findPlace(place.latitude.toLikeString(), place.longitude.toLikeString())
             ?: place.copy(id = locationDao.insert(place))
@@ -86,6 +109,7 @@ class GeoMarkerPromoteWorker @AssistedInject constructor(
 
     companion object {
         private const val WORK_NAME = "promote_geo_markers"
+        private val PROMOTE_MUTEX = Mutex()
 
         fun enqueue(context: Context) {
             WorkManager.getInstance(context)
