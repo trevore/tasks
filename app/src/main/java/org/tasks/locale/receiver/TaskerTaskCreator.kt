@@ -82,18 +82,35 @@ class TaskerTaskCreator @Inject internal constructor(
         val longitudeString = bundle.longitude
         if (!isNullOrEmpty(latitudeString) && !isNullOrEmpty(longitudeString)) {
             try {
+                val latitude = latitudeString.toDouble()
+                val longitude = longitudeString.toDouble()
+                // NaN/Infinity slip past a bare range check (every comparison with
+                // NaN is false), so reject non-finite coords explicitly before the
+                // bounds test — Tasker variables are free text.
+                if (!latitude.isFinite() || !longitude.isFinite() ||
+                        latitude < -90.0 || latitude > 90.0 ||
+                        longitude < -180.0 || longitude > 180.0) {
+                    Timber.w("Ignoring invalid coordinates lat=%s lng=%s", latitudeString, longitudeString)
+                    return
+                }
                 var place = Place(
                         name = bundle.placeName,
-                        latitude = latitudeString.toDouble(),
-                        longitude = longitudeString.toDouble())
+                        latitude = latitude,
+                        longitude = longitude)
                 val radiusString = bundle.radius
                 if (!isNullOrEmpty(radiusString)) {
                     try {
-                        place = place.copy(radius = radiusString.toInt())
+                        // A non-positive radius is rejected by the geofence
+                        // registrar; drop it so the place falls back to the
+                        // app default rather than failing to arm.
+                        radiusString.toInt().takeIf { it > 0 }
+                                ?.let { place = place.copy(radius = it) }
                     } catch (e: NumberFormatException) {
                         Timber.e(e)
                     }
                 }
+                // An existing place at these coords wins, including its radius —
+                // same reuse the in-app map picker applies.
                 place = locationDao
                         .findPlace(place.latitude.toLikeString(), place.longitude.toLikeString())
                         ?: place.copy(id = locationDao.insert(place))

@@ -90,7 +90,9 @@ fun stripGeoMarker(notes: String?): String? {
     if (!removed) {
         return notes
     }
-    return kept.joinToString("\n").trim().ifBlank { null }
+    // No global trim: the user's own leading/trailing whitespace is their content —
+    // only the marker line (and its separator) goes away.
+    return kept.joinToString("\n").ifBlank { null }
 }
 
 private fun isGeoMarkerLine(line: String): Boolean {

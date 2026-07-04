@@ -144,4 +144,14 @@ class GeoMarkerTest {
     fun stripLeavesNotesWithoutMarkerUnchanged() {
         assertEquals("Just a normal note", stripGeoMarker("Just a normal note"))
     }
+
+    @Test
+    fun stripPreservesSurroundingWhitespace() {
+        // Only the marker line goes away — the user's own indentation, blank
+        // lines, and trailing newline are their content.
+        assertEquals(
+            "  indented\n\ntrailing newline kept\n",
+            stripGeoMarker("  indented\n\ntrailing newline kept\n@gomu-geo v1 lat=1.0 lng=2.0\n")
+        )
+    }
 }
