@@ -102,8 +102,12 @@ class GeoMarkerPromoteWorker @AssistedInject constructor(
     private suspend fun stripAndSave(task: Task) {
         val cleaned = stripGeoMarker(task.notes)
         if (cleaned != task.notes) {
+            // Snapshot before mutating so TaskSaver can diff old vs new and mark
+            // the cleaned note dirty — that dirty flag is what re-syncs the strip
+            // back up. (15.7.3 made `original` a required arg on save().)
+            val original = task.copy()
             task.notes = cleaned
-            taskSaver.save(task)
+            taskSaver.save(task, original)
         }
     }
 
